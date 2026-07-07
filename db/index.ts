@@ -17,6 +17,7 @@ export type DB = {
   transfers: Transfer[];
 };
 
+// We use globalThis to save the state in memory between reloads (Fast Refresh) in Next.js
 const globalForDb = globalThis as unknown as {
   __db: DB;
 };
@@ -69,11 +70,13 @@ export const transfer = (
 export const getStatistics = () => {
   const db = globalForDb.__db;
   const totalBalance = db.accounts.reduce((sum, acc) => sum + acc.balance, 0);
-
+  const totalVolume = db.transfers.reduce((sum, t) => sum + t.amount, 0);
+  
   return {
     totalAccounts: db.accounts.length,
     totalBalance,
     totalTransfers: db.transfers.length,
-    lastOperations: db.transfers.slice(-5).reverse(),
+    totalVolume,
+    lastOperations: db.transfers.slice(-5).reverse(), // last 5 operations
   };
 };
