@@ -18,7 +18,6 @@ export async function getAccountsCached(): Promise<Account[]> {
     );
   }
 
-  // Fallback to Source of Truth (DB)
   const accounts = getAccounts();
 
   try {
