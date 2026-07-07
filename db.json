@@ -3,54 +3,53 @@
     {
       "id": 1,
       "name": "Ivan",
-      "balance": 1489
+      "balance": 1500
     },
     {
       "id": 2,
       "name": "Anna",
-      "balance": 822
+      "balance": 900
     },
     {
       "id": 3,
       "name": "Alex",
-      "balance": 2389
+      "balance": 2300
+    },
+    {
+      "id": 4,
+      "name": "Maria",
+      "balance": 3400
+    },
+    {
+      "id": 5,
+      "name": "Dmytro",
+      "balance": 1200
+    },
+    {
+      "id": 6,
+      "name": "Olena",
+      "balance": 5000
+    },
+    {
+      "id": 7,
+      "name": "Max",
+      "balance": 750
+    },
+    {
+      "id": 8,
+      "name": "Sofia",
+      "balance": 4100
+    },
+    {
+      "id": 9,
+      "name": "Oleg",
+      "balance": 600
+    },
+    {
+      "id": 10,
+      "name": "Kateryna",
+      "balance": 2900
     }
   ],
-  "transfers": [
-    {
-      "id": 1783433949457,
-      "from": 1,
-      "to": 2,
-      "amount": 11,
-      "timestamp": "2026-07-07T14:19:09.457Z"
-    },
-    {
-      "id": 1783434036892,
-      "from": 3,
-      "to": 2,
-      "amount": 11,
-      "timestamp": "2026-07-07T14:20:36.892Z"
-    },
-    {
-      "id": 1783434045697,
-      "from": 2,
-      "to": 2,
-      "amount": 10,
-      "timestamp": "2026-07-07T14:20:45.697Z"
-    },
-    {
-      "id": 1783434051898,
-      "from": 1,
-      "to": 3,
-      "amount": 100,
-      "timestamp": "2026-07-07T14:20:51.898Z"
-    },
-    {
-      "id": 1783434084237,
-      "from": 2,
-      "to": 1,
-      "amount": 100,
-      "timestamp": "2026-07-07T14:21:24.237Z"
-    }
-  ]
+  "transfers": []
 }

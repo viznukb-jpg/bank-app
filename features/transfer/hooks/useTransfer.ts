@@ -1,0 +1,24 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { TransferPayload } from "@/shared/types";
+
+export function useTransfer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: TransferPayload) => {
+      const res = await fetch("/api/transfer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Transfer failed");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+}

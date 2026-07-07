@@ -1,41 +1,36 @@
 import { NextResponse } from "next/server";
-import { transfer } from "@/db/index";
+import { transfer } from "@/shared/db/index";
 import { redis } from "@/shared/lib/redis";
+import type { TransferPayload } from "@/shared/types";
+import { apiWrapper, AppError } from "@/shared/utils/errors";
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { from, to, amount } = body;
+export const POST = apiWrapper(async (request: Request) => {
+  const body = (await request.json()) as TransferPayload;
+  const { from, to, amount } = body;
 
-    // Validate request payload
-    if (!from || !to || !amount || amount <= 0) {
-      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
-    }
+  if (!from || !to || !amount || amount <= 0) {
+    throw new AppError("Invalid payload", 400);
+  }
 
-    // Execute transfer (checks existence and balance inside the function)
-    const success = transfer(Number(from), Number(to), Number(amount));
+  if (from === to) {
+    throw new AppError("Cannot transfer to the same account", 400);
+  }
 
-    if (!success) {
-      return NextResponse.json(
-        { error: "Transfer failed: invalid accounts or insufficient funds" },
-        { status: 400 },
-      );
-    }
+  const success = transfer(Number(from), Number(to), Number(amount));
 
-    // Invalidate Redis cache for the accounts list and individual accounts
-    await redis.del("accounts:list");
-    await redis.del(`account:${from}`);
-    await redis.del(`account:${to}`);
-
-    return NextResponse.json({
-      success: true,
-      message: "Transfer completed successfully",
-    });
-  } catch (error) {
-    console.error("Error in transfer route:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
+  if (!success) {
+    throw new AppError(
+      "Transfer failed: invalid accounts or insufficient funds",
+      400,
     );
   }
-}
+
+  await redis.del("accounts:list");
+  await redis.del(`account:${from}`);
+  await redis.del(`account:${to}`);
+
+  return NextResponse.json({
+    success: true,
+    message: "Transfer completed successfully",
+  });
+});

@@ -1,4 +1,4 @@
-import { getAccountById } from "@/db/index";
+import { getAccountById } from "@/shared/db/index";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

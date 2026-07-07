@@ -1,8 +1,11 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { getQueryClient } from "@/shared/lib/get-query-client";
-import HomePageClient from "./components/HomePageClient";
-import { getAccounts } from "@/db/index";
+import { getQueryClient } from "@/shared/query-provider/get-query-client";
+import { getAccounts } from "@/shared/db/index";
 import { redis } from "@/shared/lib/redis";
+import { AccountList } from "@/features/accounts/components/AccountList";
+import { StatisticsWidget } from "@/features/statistics/components/StatisticsWidget";
+import { TransferForm } from "@/features/transfer/components/TransferForm";
+import { RecentTransfers } from "@/features/statistics/components/RecentTransfers";
 
 export default async function HomePage() {
   const queryClient = getQueryClient();
@@ -31,9 +34,26 @@ export default async function HomePage() {
 
   return (
     <main className="p-8 min-h-screen">
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <HomePageClient />
-      </HydrationBoundary>
+      <div className="space-y-8 mx-auto max-w-4xl">
+        <header className="text-center">
+          <h1 className="font-extrabold text-slate-900 dark:text-white text-4xl tracking-tight">
+            Mini Banking System
+          </h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-300">
+            Fast, cached, and reliable.
+          </p>
+        </header>
+
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <div className="items-start gap-8 grid grid-cols-1 md:grid-cols-3">
+            <AccountList />
+            <StatisticsWidget />
+            <TransferForm />
+          </div>
+
+          <RecentTransfers />
+        </HydrationBoundary>
+      </div>
     </main>
   );
 }

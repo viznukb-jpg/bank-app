@@ -3,7 +3,7 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     console.log("🚀 Starting Background Worker...");
 
-    const { getStatistics } = await import("./db/index");
+    const { getStatistics } = await import("./shared/db/index");
     const { redis } = await import("./shared/lib/redis");
     const { WORKER_INTERVAL_MS } = await import("./shared/config/constants");
 

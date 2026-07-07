@@ -6,7 +6,9 @@ const globalForRedis = globalThis as unknown as {
 
 export const redis =
   globalForRedis.__redis ||
-  new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+  new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379", {
+    maxRetriesPerRequest: 3,
+  });
 
 if (process.env.NODE_ENV !== "production") {
   globalForRedis.__redis = redis;

@@ -1,19 +1,6 @@
 import fs from "fs";
 import path from "path";
-
-export type Account = {
-  id: number;
-  name: string;
-  balance: number;
-};
-
-export type Transfer = {
-  id: number;
-  from: number;
-  to: number;
-  amount: number;
-  timestamp: string;
-};
+import type { Account, Transfer, Statistics } from "@/shared/types";
 
 export type DB = {
   accounts: Account[];
@@ -22,7 +9,6 @@ export type DB = {
 
 const DB_PATH = path.join(process.cwd(), "db.json");
 
-// Helper to initialize or read the database
 const getDB = (): DB => {
   if (!fs.existsSync(DB_PATH)) {
     const initialDB: DB = {
@@ -30,6 +16,13 @@ const getDB = (): DB => {
         { id: 1, name: "Ivan", balance: 1500 },
         { id: 2, name: "Anna", balance: 900 },
         { id: 3, name: "Alex", balance: 2300 },
+        { id: 4, name: "Maria", balance: 3400 },
+        { id: 5, name: "Dmytro", balance: 1200 },
+        { id: 6, name: "Olena", balance: 5000 },
+        { id: 7, name: "Max", balance: 750 },
+        { id: 8, name: "Sofia", balance: 4100 },
+        { id: 9, name: "Oleg", balance: 600 },
+        { id: 10, name: "Kateryna", balance: 2900 },
       ],
       transfers: [],
     };
@@ -39,7 +32,6 @@ const getDB = (): DB => {
   return JSON.parse(fs.readFileSync(DB_PATH, "utf-8"));
 };
 
-// Helper to save the database
 const saveDB = (db: DB) => {
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
 };
@@ -57,9 +49,11 @@ export const transfer = (
   toId: number,
   amount: number,
 ): boolean => {
+  if (fromId === toId) return false;
+
   const db = getDB();
-  const fromAccIndex = db.accounts.findIndex((a) => a.id === fromId);
-  const toAccIndex = db.accounts.findIndex((a) => a.id === toId);
+  const fromAccIndex = db.accounts.findIndex((account) => account.id === fromId);
+  const toAccIndex = db.accounts.findIndex((account) => account.id === toId);
 
   if (fromAccIndex === -1 || toAccIndex === -1) return false;
   if (db.accounts[fromAccIndex].balance < amount) return false;
@@ -79,16 +73,16 @@ export const transfer = (
   return true;
 };
 
-export const getStatistics = () => {
+export const getStatistics = (): Statistics => {
   const db = getDB();
-  const totalBalance = db.accounts.reduce((sum, acc) => sum + acc.balance, 0);
-  const totalVolume = db.transfers.reduce((sum, t) => sum + t.amount, 0);
+  const totalBalance = db.accounts.reduce((sum, account) => sum + account.balance, 0);
+  const totalVolume = db.transfers.reduce((sum, transfer) => sum + transfer.amount, 0);
 
   return {
     totalAccounts: db.accounts.length,
     totalBalance,
     totalTransfers: db.transfers.length,
     totalVolume,
-    lastOperations: db.transfers.slice(-5).reverse(), // last 5 operations
+    lastOperations: db.transfers.slice(-5).reverse(),
   };
 };
