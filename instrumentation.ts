@@ -5,6 +5,7 @@ export async function register() {
 
     const { getStatistics } = await import("./db/index");
     const { redis } = await import("./shared/lib/redis");
+    const { WORKER_INTERVAL_MS } = await import("./shared/config/constants");
 
     const cacheKey = "statistics:report";
 
@@ -26,7 +27,7 @@ export async function register() {
     // Run for the first time immediately
     await performTask();
 
-    // Setup to run every 30 seconds
-    setInterval(performTask, 30000);
+    // Setup to run using the configured interval
+    setInterval(performTask, WORKER_INTERVAL_MS);
   }
 }

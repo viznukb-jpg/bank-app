@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAccounts } from "@/db/index";
 import { redis } from "@/shared/lib/redis";
+import { REDIS_CACHE_TTL } from "@/shared/config/constants";
 
 export async function GET() {
   try {
@@ -15,8 +16,8 @@ export async function GET() {
     // 2. Cache miss — fetch from Source of Truth
     const accounts = getAccounts();
 
-    // 3. Save to Redis with a TTL of 60 seconds
-    await redis.set(cacheKey, JSON.stringify(accounts), "EX", 60);
+    // 3. Save to Redis with the specified TTL
+    await redis.set(cacheKey, JSON.stringify(accounts), "EX", REDIS_CACHE_TTL);
 
     return NextResponse.json(accounts);
   } catch (error) {

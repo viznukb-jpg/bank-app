@@ -2,7 +2,7 @@ import {
   QueryClient,
   defaultShouldDehydrateQuery,
 } from "@tanstack/react-query";
-import { QUERY_CONFIG } from "./constants";
+import { QUERY_CONFIG } from "../config/constants";
 
 function makeQueryClient() {
   return new QueryClient({

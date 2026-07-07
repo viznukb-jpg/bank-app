@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 export type Account = {
   id: number;
   name: string;
@@ -17,28 +20,36 @@ export type DB = {
   transfers: Transfer[];
 };
 
-// We use globalThis to save the state in memory between reloads (Fast Refresh) in Next.js
-const globalForDb = globalThis as unknown as {
-  __db: DB;
+const DB_PATH = path.join(process.cwd(), "db.json");
+
+// Helper to initialize or read the database
+const getDB = (): DB => {
+  if (!fs.existsSync(DB_PATH)) {
+    const initialDB: DB = {
+      accounts: [
+        { id: 1, name: "Ivan", balance: 1500 },
+        { id: 2, name: "Anna", balance: 900 },
+        { id: 3, name: "Alex", balance: 2300 },
+      ],
+      transfers: [],
+    };
+    fs.writeFileSync(DB_PATH, JSON.stringify(initialDB, null, 2));
+    return initialDB;
+  }
+  return JSON.parse(fs.readFileSync(DB_PATH, "utf-8"));
 };
 
-if (!globalForDb.__db) {
-  globalForDb.__db = {
-    accounts: [
-      { id: 1, name: "Ivan", balance: 1500 },
-      { id: 2, name: "Anna", balance: 900 },
-      { id: 3, name: "Alex", balance: 2300 },
-    ],
-    transfers: [],
-  };
-}
+// Helper to save the database
+const saveDB = (db: DB) => {
+  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+};
 
 export const getAccounts = (): Account[] => {
-  return globalForDb.__db.accounts;
+  return getDB().accounts;
 };
 
 export const getAccountById = (id: number): Account | undefined => {
-  return globalForDb.__db.accounts.find((account) => account.id === id);
+  return getDB().accounts.find((account) => account.id === id);
 };
 
 export const transfer = (
@@ -46,7 +57,7 @@ export const transfer = (
   toId: number,
   amount: number,
 ): boolean => {
-  const db = globalForDb.__db;
+  const db = getDB();
   const fromAccIndex = db.accounts.findIndex((a) => a.id === fromId);
   const toAccIndex = db.accounts.findIndex((a) => a.id === toId);
 
@@ -64,14 +75,15 @@ export const transfer = (
     timestamp: new Date().toISOString(),
   });
 
+  saveDB(db);
   return true;
 };
 
 export const getStatistics = () => {
-  const db = globalForDb.__db;
+  const db = getDB();
   const totalBalance = db.accounts.reduce((sum, acc) => sum + acc.balance, 0);
   const totalVolume = db.transfers.reduce((sum, t) => sum + t.amount, 0);
-  
+
   return {
     totalAccounts: db.accounts.length,
     totalBalance,
