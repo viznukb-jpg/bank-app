@@ -16,7 +16,7 @@ export const POST = apiWrapper(async (request: Request) => {
     throw new AppError("Cannot transfer to the same account", 400);
   }
 
-  const success = transfer(Number(from), Number(to), Number(amount));
+  const success = await transfer(Number(from), Number(to), Number(amount));
 
   if (!success) {
     throw new AppError(

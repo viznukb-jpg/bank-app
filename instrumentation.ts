@@ -27,7 +27,9 @@ export async function register() {
     // Run for the first time immediately
     await performTask();
 
-    // Setup to run using the configured interval
-    setInterval(performTask, WORKER_INTERVAL_MS);
+    // Setup to run using the configured interval (prevent leak in dev mode)
+    if (!(globalThis as any).__worker_interval) {
+      (globalThis as any).__worker_interval = setInterval(performTask, WORKER_INTERVAL_MS);
+    }
   }
 }

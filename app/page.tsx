@@ -1,6 +1,6 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/shared/query-provider/get-query-client";
-import { getAccounts } from "@/shared/db/index";
+import { getAccountsCached } from "@/shared/cache/accounts";
 import { redis } from "@/shared/lib/redis";
 import { AccountList } from "@/features/accounts/components/AccountList";
 import { StatisticsWidget } from "@/features/statistics/components/StatisticsWidget";
@@ -13,15 +13,19 @@ export default async function HomePage() {
   await queryClient.prefetchQuery({
     queryKey: ["accounts"],
     queryFn: async () => {
-      return getAccounts();
+      return getAccountsCached();
     },
   });
 
   await queryClient.prefetchQuery({
     queryKey: ["statistics"],
     queryFn: async () => {
-      const cachedData = await redis.get("statistics:report");
-      if (cachedData) return JSON.parse(cachedData);
+      try {
+        const cachedData = await redis.get("statistics:report");
+        if (cachedData) return JSON.parse(cachedData);
+      } catch (error) {
+        console.warn("[Cache Error]: Failed to read statistics from Redis during SSR", error);
+      }
 
       return {
         totalAccounts: 0,

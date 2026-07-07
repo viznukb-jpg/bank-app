@@ -1,4 +1,4 @@
-import { getAccountById } from "@/shared/db/index";
+import { getAccountByIdCached } from "@/shared/cache/accounts";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -14,7 +14,7 @@ export default async function UserPage({
     notFound();
   }
 
-  const account = getAccountById(accountId);
+  const account = await getAccountByIdCached(accountId);
 
   if (!account) {
     notFound();

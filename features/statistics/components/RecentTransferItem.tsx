@@ -15,7 +15,7 @@ export function RecentTransferItem({
   const toName =
     accounts?.find((account) => account.id === operation.to)?.name ||
     `ID: ${operation.to}`;
-  const dateObj = new Date(op.timestamp);
+  const dateObj = new Date(operation.timestamp);
   const formattedDate =
     dateObj.toLocaleDateString() +
     " " +

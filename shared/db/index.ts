@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import lockfile from "proper-lockfile";
 import type { Account, Transfer, Statistics } from "@/shared/types";
 
 export type DB = {
@@ -44,33 +45,46 @@ export const getAccountById = (id: number): Account | undefined => {
   return getDB().accounts.find((account) => account.id === id);
 };
 
-export const transfer = (
+export const transfer = async (
   fromId: number,
   toId: number,
   amount: number,
-): boolean => {
+): Promise<boolean> => {
   if (fromId === toId) return false;
 
-  const db = getDB();
-  const fromAccIndex = db.accounts.findIndex((account) => account.id === fromId);
-  const toAccIndex = db.accounts.findIndex((account) => account.id === toId);
+  let release;
+  try {
+    // Acquire a lock on the database file, retry if it's currently locked by another request
+    release = await lockfile.lock(DB_PATH, { retries: { retries: 5, minTimeout: 50 } });
+  } catch (error) {
+    console.error("[DB Error]: Failed to acquire file lock for transfer:", error);
+    return false; // Return false or throw an AppError instead
+  }
 
-  if (fromAccIndex === -1 || toAccIndex === -1) return false;
-  if (db.accounts[fromAccIndex].balance < amount) return false;
+  try {
+    const db = getDB();
+    const fromAccIndex = db.accounts.findIndex((account) => account.id === fromId);
+    const toAccIndex = db.accounts.findIndex((account) => account.id === toId);
 
-  db.accounts[fromAccIndex].balance -= amount;
-  db.accounts[toAccIndex].balance += amount;
+    if (fromAccIndex === -1 || toAccIndex === -1) return false;
+    if (db.accounts[fromAccIndex].balance < amount) return false;
 
-  db.transfers.push({
-    id: Date.now(),
-    from: fromId,
-    to: toId,
-    amount,
-    timestamp: new Date().toISOString(),
-  });
+    db.accounts[fromAccIndex].balance -= amount;
+    db.accounts[toAccIndex].balance += amount;
 
-  saveDB(db);
-  return true;
+    db.transfers.push({
+      id: Date.now(),
+      from: fromId,
+      to: toId,
+      amount,
+      timestamp: new Date().toISOString(),
+    });
+
+    saveDB(db);
+    return true;
+  } finally {
+    if (release) await release();
+  }
 };
 
 export const getStatistics = (): Statistics => {
