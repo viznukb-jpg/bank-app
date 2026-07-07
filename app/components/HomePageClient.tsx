@@ -80,47 +80,49 @@ export default function HomePageClient() {
         <p className="mt-2 text-slate-500">Fast, cached, and reliable.</p>
       </header>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <h2 className="text-2xl font-semibold mb-4 text-slate-800">Accounts</h2>
+          <div className="space-y-3">
+            {accounts?.map((acc) => (
+              <Link 
+                href={`/accounts/${acc.id}`} 
+                key={acc.id} 
+                className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-blue-300 hover:shadow-sm transition-all block cursor-pointer group"
+              >
+                <span className="font-medium text-slate-700 group-hover:text-blue-600 transition-colors">
+                  {acc.name}
+                </span>
+                <span className="font-bold text-emerald-600 text-lg">${acc.balance}</span>
+              </Link>
+            ))}
+            {!accounts?.length && <p className="text-slate-500 italic">No accounts found.</p>}
+          </div>
+        </section>
+
+        {stats && (
           <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <h2 className="text-2xl font-semibold mb-4 text-slate-800">Accounts</h2>
-            <div className="space-y-3">
-              {accounts?.map((acc) => (
-                <div key={acc.id} className="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-blue-200 transition-colors">
-                  <Link href={`/accounts/${acc.id}`} className="font-medium text-blue-600 hover:text-blue-700 hover:underline">
-                    {acc.name}
-                  </Link>
-                  <span className="font-bold text-emerald-600 text-lg">${acc.balance}</span>
-                </div>
-              ))}
-              {!accounts?.length && <p className="text-slate-500 italic">No accounts found.</p>}
+            <h2 className="text-2xl font-semibold mb-4 text-slate-800">System Statistics</h2>
+            <div className="space-y-3 text-slate-600">
+              <div className="flex justify-between border-b pb-2">
+                <span>Total Accounts</span>
+                <span className="font-semibold text-slate-900">{stats.totalAccounts}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                <span>Total Balance</span>
+                <span className="font-semibold text-emerald-600">${stats.totalBalance}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                <span>Total Transfers</span>
+                <span className="font-semibold text-slate-900">{stats.totalTransfers}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Volume</span>
+                <span className="font-semibold text-emerald-600">${stats.totalVolume || 0}</span>
+              </div>
             </div>
           </section>
-
-          {stats && (
-            <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-              <h2 className="text-2xl font-semibold mb-4 text-slate-800">System Statistics</h2>
-              <div className="space-y-3 text-slate-600">
-                <div className="flex justify-between border-b pb-2">
-                  <span>Total Accounts</span>
-                  <span className="font-semibold text-slate-900">{stats.totalAccounts}</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span>Total Balance</span>
-                  <span className="font-semibold text-emerald-600">${stats.totalBalance}</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span>Total Transfers</span>
-                  <span className="font-semibold text-slate-900">{stats.totalTransfers}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Total Volume</span>
-                  <span className="font-semibold text-emerald-600">${stats.totalVolume || 0}</span>
-                </div>
-              </div>
-            </section>
-          )}
-        </div>
+        )}
 
         <section>
           <form onSubmit={handleTransfer} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5 sticky top-8">
