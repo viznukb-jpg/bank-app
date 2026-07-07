@@ -1,6 +1,5 @@
 import { Redis } from "ioredis";
 
-// Using globalThis so the Redis instance isn't recreated during Fast Refresh
 const globalForRedis = globalThis as unknown as {
   __redis: Redis;
 };

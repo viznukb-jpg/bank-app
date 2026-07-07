@@ -3,21 +3,23 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     console.log("🚀 Starting Background Worker...");
 
-    const { getStatistics } = await import('./db/index');
-    const { redis } = await import('./lib/redis');
+    const { getStatistics } = await import("./db/index");
+    const { redis } = await import("./shared/lib/redis");
 
-    const cacheKey = 'statistics:report';
+    const cacheKey = "statistics:report";
 
     // Function that performs data aggregation
     const performTask = async () => {
       try {
         const stats = getStatistics();
-        
+
         // Save the aggregation results in Redis
         await redis.set(cacheKey, JSON.stringify(stats));
-        console.log(`[Worker]: Statistics updated in Redis. Total transfers: ${stats.totalTransfers}`);
+        console.log(
+          `[Worker]: Statistics updated in Redis. Total transfers: ${stats.totalTransfers}`,
+        );
       } catch (error) {
-        console.error('[Worker Error]:', error);
+        console.error("[Worker Error]:", error);
       }
     };
 
