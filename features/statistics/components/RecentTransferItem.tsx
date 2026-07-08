@@ -1,4 +1,5 @@
 import type { Transfer, Account } from "@/shared/types";
+import { formatCurrency } from "@/shared/utils/currency";
 
 interface RecentTransferItemProps {
   operation: Transfer;
@@ -32,7 +33,7 @@ export function RecentTransferItem({
       <td className="py-4 font-medium text-slate-800">{fromName}</td>
       <td className="py-4 font-medium text-slate-800">{toName}</td>
       <td className="py-4 font-bold text-emerald-600 text-right">
-        ${operation.amount}
+        {formatCurrency(operation.amount)}
       </td>
     </tr>
   );

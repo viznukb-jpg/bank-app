@@ -1,6 +1,7 @@
 import { getAccountByIdCached } from "@/shared/cache/accounts";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { formatCurrency } from "@/shared/utils/currency";
 
 export default async function UserPage({
   params,
@@ -40,7 +41,7 @@ export default async function UserPage({
           Current Balance
         </p>
         <p className="mt-2 font-extrabold text-emerald-600 text-6xl">
-          ${account.balance ?? 0}
+          {formatCurrency(account.balance)}
         </p>
       </div>
     </main>

@@ -52,7 +52,14 @@ export const transfer = async (
   toId: number,
   amount: number,
 ): Promise<boolean> => {
-  if (fromId === toId) return false;
+  if (
+    !Number.isFinite(fromId) ||
+    !Number.isFinite(toId) ||
+    !Number.isFinite(amount)
+  ) {
+    return false;
+  }
+  if (amount <= 0 || fromId === toId) return false;
 
   let release;
   try {
@@ -78,8 +85,8 @@ export const transfer = async (
     if (fromAccIndex === -1 || toAccIndex === -1) return false;
     if (db.accounts[fromAccIndex].balance < amount) return false;
 
-    db.accounts[fromAccIndex].balance -= amount;
-    db.accounts[toAccIndex].balance += amount;
+    db.accounts[fromAccIndex].balance = Math.round((db.accounts[fromAccIndex].balance - amount) * 100) / 100;
+    db.accounts[toAccIndex].balance = Math.round((db.accounts[toAccIndex].balance + amount) * 100) / 100;
 
     db.transfers.push({
       id: Date.now(),

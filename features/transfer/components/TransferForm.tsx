@@ -8,6 +8,7 @@ import { Select } from "@/shared/ui/Select";
 import { Input } from "@/shared/ui/Input";
 import { Button } from "@/shared/ui/Button";
 import toast from "react-hot-toast";
+import { formatCurrency } from "@/shared/utils/currency";
 
 export function TransferForm() {
   const { data: accounts } = useAccounts();
@@ -65,7 +66,7 @@ export function TransferForm() {
           <option value="">Select sender</option>
           {accounts?.map((account) => (
             <option key={account.id} value={account.id}>
-              {account.name} (${account.balance ?? 0})
+              {account.name} ({formatCurrency(account.balance)})
             </option>
           ))}
         </Select>

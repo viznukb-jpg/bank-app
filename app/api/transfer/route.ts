@@ -5,7 +5,12 @@ import type { TransferPayload } from "@/shared/types";
 import { apiWrapper, AppError } from "@/shared/utils/errors";
 
 export const POST = apiWrapper(async (request: Request) => {
-  const body = (await request.json()) as TransferPayload;
+  let body: TransferPayload;
+  try {
+    body = (await request.json()) as TransferPayload;
+  } catch {
+    throw new AppError("Invalid JSON body", 400);
+  }
   const { from, to, amount } = body;
 
   const fromNum = Number(from);
@@ -21,11 +26,11 @@ export const POST = apiWrapper(async (request: Request) => {
     throw new AppError("Invalid payload", 400);
   }
 
-  if (from === to) {
+  if (fromNum === toNum) {
     throw new AppError("Cannot transfer to the same account", 400);
   }
 
-  const success = await transfer(Number(from), Number(to), Number(amount));
+  const success = await transfer(fromNum, toNum, amountNum);
 
   if (!success) {
     throw new AppError(
@@ -34,9 +39,18 @@ export const POST = apiWrapper(async (request: Request) => {
     );
   }
 
-  await redis.del("accounts:list");
-  await redis.del(`account:${from}`);
-  await redis.del(`account:${to}`);
+  try {
+    await Promise.all([
+      redis.del("accounts:list"),
+      redis.del(`account:${fromNum}`),
+      redis.del(`account:${toNum}`),
+    ]);
+  } catch (error) {
+    console.warn(
+      "[Cache Error]: Failed to invalidate account cache after transfer",
+      error,
+    );
+  }
 
   return NextResponse.json({
     success: true,

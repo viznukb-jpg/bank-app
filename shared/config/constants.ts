@@ -3,4 +3,6 @@ export const QUERY_CONFIG = {
 } as const;
 
 export const REDIS_CACHE_TTL = 60;
+
 export const WORKER_INTERVAL_MS = 1000 * 30;
+export const STATS_CACHE_TTL_SECONDS = (WORKER_INTERVAL_MS * 3) / 1000;

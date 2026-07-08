@@ -1,5 +1,10 @@
+import { STATS_CACHE_TTL_SECONDS } from "@/shared/config/constants";
+
+declare global {
+  var __worker_interval: ReturnType<typeof setInterval> | undefined;
+}
+
 export async function register() {
-  // Run the worker only on the server (Node.js runtime)
   if (process.env.NEXT_RUNTIME === "nodejs") {
     console.log("🚀 Starting Background Worker...");
 
@@ -9,13 +14,15 @@ export async function register() {
 
     const cacheKey = "statistics:report";
 
-    // Function that performs data aggregation
     const performTask = async () => {
       try {
         const stats = getStatistics();
-
-        // Save the aggregation results in Redis
-        await redis.set(cacheKey, JSON.stringify(stats));
+        await redis.set(
+          cacheKey,
+          JSON.stringify(stats),
+          "EX",
+          STATS_CACHE_TTL_SECONDS,
+        );
         console.log(
           `[Worker]: Statistics updated in Redis. Total transfers: ${stats.totalTransfers}`,
         );
@@ -24,12 +31,13 @@ export async function register() {
       }
     };
 
-    // Run for the first time immediately
     await performTask();
 
-    // Setup to run using the configured interval (prevent leak in dev mode)
-    if (!(globalThis as any).__worker_interval) {
-      (globalThis as any).__worker_interval = setInterval(performTask, WORKER_INTERVAL_MS);
+    if (!globalThis.__worker_interval) {
+      globalThis.__worker_interval = setInterval(
+        performTask,
+        WORKER_INTERVAL_MS,
+      );
     }
   }
 }

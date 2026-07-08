@@ -3,17 +3,17 @@
     {
       "id": 1,
       "name": "Ivan",
-      "balance": null
+      "balance": 900
     },
     {
       "id": 2,
       "name": "Anna",
-      "balance": 1000
+      "balance": 0
     },
     {
       "id": 3,
       "name": "Alex",
-      "balance": 3400
+      "balance": 3500
     },
     {
       "id": 4,
@@ -65,6 +65,20 @@
       "to": 2,
       "amount": 1000,
       "timestamp": "2026-07-08T09:03:54.055Z"
+    },
+    {
+      "id": 1783501804988,
+      "from": 2,
+      "to": 1,
+      "amount": 1000,
+      "timestamp": "2026-07-08T09:10:04.988Z"
+    },
+    {
+      "id": 1783502104179,
+      "from": 1,
+      "to": 3,
+      "amount": 100,
+      "timestamp": "2026-07-08T09:15:04.179Z"
     }
   ]
 }

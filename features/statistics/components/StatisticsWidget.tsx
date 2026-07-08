@@ -3,6 +3,7 @@
 import { useStatistics } from "../hooks/useStatistics";
 import { WidgetContainer } from "@/shared/ui/WidgetContainer";
 import { StatRow } from "@/shared/ui/StatRow";
+import { formatCurrency } from "@/shared/utils/currency";
 
 export function StatisticsWidget() {
   const { data: stats, isLoading, isError } = useStatistics();
@@ -22,7 +23,7 @@ export function StatisticsWidget() {
             />
             <StatRow
               label="Total Balance"
-              value={`$${stats.totalBalance}`}
+              value={formatCurrency(stats.totalBalance)}
               variant="success"
             />
             <StatRow
@@ -31,7 +32,7 @@ export function StatisticsWidget() {
             />
             <StatRow
               label="Total Volume"
-              value={`$${stats.totalVolume || 0}`}
+              value={formatCurrency(stats.totalVolume)}
               variant="success"
               hasBorder={false}
             />

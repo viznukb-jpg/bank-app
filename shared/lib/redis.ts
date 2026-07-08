@@ -10,6 +10,10 @@ export const redis =
     maxRetriesPerRequest: 3,
   });
 
+redis.on("error", (err) => {
+  console.error("[Redis] connection error:", err);
+});
+
 if (process.env.NODE_ENV !== "production") {
   globalForRedis.__redis = redis;
 }

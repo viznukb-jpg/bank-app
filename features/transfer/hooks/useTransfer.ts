@@ -19,7 +19,6 @@ export function useTransfer() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["statistics"] });
     },
   });
 }

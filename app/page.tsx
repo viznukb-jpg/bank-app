@@ -1,11 +1,12 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/shared/query-provider/get-query-client";
 import { getAccountsCached } from "@/shared/cache/accounts";
-import { redis } from "@/shared/lib/redis";
+import { getStatisticsCached } from "@/shared/cache/statistics";
 import { AccountList } from "@/features/accounts/components/AccountList";
 import { StatisticsWidget } from "@/features/statistics/components/StatisticsWidget";
 import { TransferForm } from "@/features/transfer/components/TransferForm";
 import { RecentTransfers } from "@/features/statistics/components/RecentTransfers";
+import type { Statistics } from "@/shared/types";
 
 export default async function HomePage() {
   const queryClient = getQueryClient();
@@ -20,19 +21,7 @@ export default async function HomePage() {
   await queryClient.prefetchQuery({
     queryKey: ["statistics"],
     queryFn: async () => {
-      try {
-        const cachedData = await redis.get("statistics:report");
-        if (cachedData) return JSON.parse(cachedData);
-      } catch (error) {
-        console.warn("[Cache Error]: Failed to read statistics from Redis during SSR", error);
-      }
-
-      return {
-        totalAccounts: 0,
-        totalBalance: 0,
-        totalTransfers: 0,
-        lastOperations: [],
-      };
+      return getStatisticsCached();
     },
   });
 

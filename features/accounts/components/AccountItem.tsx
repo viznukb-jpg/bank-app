@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Account } from "@/shared/types";
+import { formatCurrency } from "@/shared/utils/currency";
 
 interface AccountItemProps {
   account: Account;
@@ -15,7 +16,7 @@ export function AccountItem({ account }: AccountItemProps) {
         {account.name}
       </span>
       <span className="font-bold text-emerald-600 text-lg">
-        ${account.balance ?? 0}
+        {formatCurrency(account.balance)}
       </span>
     </Link>
   );
