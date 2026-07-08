@@ -8,7 +8,16 @@ export const POST = apiWrapper(async (request: Request) => {
   const body = (await request.json()) as TransferPayload;
   const { from, to, amount } = body;
 
-  if (!from || !to || !amount || amount <= 0) {
+  const fromNum = Number(from);
+  const toNum = Number(to);
+  const amountNum = Number(amount);
+
+  if (
+    !Number.isFinite(fromNum) ||
+    !Number.isFinite(toNum) ||
+    !Number.isFinite(amountNum) ||
+    amountNum <= 0
+  ) {
     throw new AppError("Invalid payload", 400);
   }
 

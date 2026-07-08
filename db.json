@@ -3,22 +3,22 @@
     {
       "id": 1,
       "name": "Ivan",
-      "balance": 1500
+      "balance": null
     },
     {
       "id": 2,
       "name": "Anna",
-      "balance": 900
+      "balance": 1000
     },
     {
       "id": 3,
       "name": "Alex",
-      "balance": 2300
+      "balance": 3400
     },
     {
       "id": 4,
       "name": "Maria",
-      "balance": 3400
+      "balance": 2410
     },
     {
       "id": 5,
@@ -33,7 +33,7 @@
     {
       "id": 7,
       "name": "Max",
-      "balance": 750
+      "balance": 650
     },
     {
       "id": 8,
@@ -51,5 +51,20 @@
       "balance": 2900
     }
   ],
-  "transfers": []
+  "transfers": [
+    {
+      "id": 1783501422287,
+      "from": 7,
+      "to": 3,
+      "amount": 100,
+      "timestamp": "2026-07-08T09:03:42.287Z"
+    },
+    {
+      "id": 1783501434055,
+      "from": 4,
+      "to": 2,
+      "amount": 1000,
+      "timestamp": "2026-07-08T09:03:54.055Z"
+    }
+  ]
 }

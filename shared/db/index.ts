@@ -9,6 +9,7 @@ export type DB = {
 };
 
 const DB_PATH = path.join(process.cwd(), "db.json");
+const DB_TMP_PATH = `${DB_PATH}.tmp`;
 
 const getDB = (): DB => {
   if (!fs.existsSync(DB_PATH)) {
@@ -34,7 +35,8 @@ const getDB = (): DB => {
 };
 
 const saveDB = (db: DB) => {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+  fs.writeFileSync(DB_TMP_PATH, JSON.stringify(db, null, 2));
+  fs.renameSync(DB_TMP_PATH, DB_PATH);
 };
 
 export const getAccounts = (): Account[] => {
@@ -55,15 +57,22 @@ export const transfer = async (
   let release;
   try {
     // Acquire a lock on the database file, retry if it's currently locked by another request
-    release = await lockfile.lock(DB_PATH, { retries: { retries: 5, minTimeout: 50 } });
+    release = await lockfile.lock(DB_PATH, {
+      retries: { retries: 5, minTimeout: 50 },
+    });
   } catch (error) {
-    console.error("[DB Error]: Failed to acquire file lock for transfer:", error);
+    console.error(
+      "[DB Error]: Failed to acquire file lock for transfer:",
+      error,
+    );
     return false; // Return false or throw an AppError instead
   }
 
   try {
     const db = getDB();
-    const fromAccIndex = db.accounts.findIndex((account) => account.id === fromId);
+    const fromAccIndex = db.accounts.findIndex(
+      (account) => account.id === fromId,
+    );
     const toAccIndex = db.accounts.findIndex((account) => account.id === toId);
 
     if (fromAccIndex === -1 || toAccIndex === -1) return false;
@@ -89,8 +98,14 @@ export const transfer = async (
 
 export const getStatistics = (): Statistics => {
   const db = getDB();
-  const totalBalance = db.accounts.reduce((sum, account) => sum + account.balance, 0);
-  const totalVolume = db.transfers.reduce((sum, transfer) => sum + transfer.amount, 0);
+  const totalBalance = db.accounts.reduce(
+    (sum, account) => sum + account.balance,
+    0,
+  );
+  const totalVolume = db.transfers.reduce(
+    (sum, transfer) => sum + transfer.amount,
+    0,
+  );
 
   return {
     totalAccounts: db.accounts.length,

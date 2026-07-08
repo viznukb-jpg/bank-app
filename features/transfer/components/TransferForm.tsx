@@ -65,7 +65,7 @@ export function TransferForm() {
           <option value="">Select sender</option>
           {accounts?.map((account) => (
             <option key={account.id} value={account.id}>
-              {account.name} (${account.balance})
+              {account.name} (${account.balance ?? 0})
             </option>
           ))}
         </Select>

@@ -15,7 +15,7 @@ export function AccountItem({ account }: AccountItemProps) {
         {account.name}
       </span>
       <span className="font-bold text-emerald-600 text-lg">
-        ${account.balance}
+        ${account.balance ?? 0}
       </span>
     </Link>
   );

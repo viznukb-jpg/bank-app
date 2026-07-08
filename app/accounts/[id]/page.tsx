@@ -40,7 +40,7 @@ export default async function UserPage({
           Current Balance
         </p>
         <p className="mt-2 font-extrabold text-emerald-600 text-6xl">
-          ${account.balance}
+          ${account.balance ?? 0}
         </p>
       </div>
     </main>
